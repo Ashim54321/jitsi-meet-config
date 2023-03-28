@@ -1,0 +1,43 @@
+
+version: '3'
+
+services:
+  jitsi:
+    image: jitsi/jitsi-meet:latest
+    ports:
+      - "80:80"
+      - "443:443"
+      - "10000:10000/udp"
+    environment:
+      - TZ=Asia/Kolkata
+      - ENABLE_AUTH=0
+      - DISABLE_HTTPS=1
+      - ENABLE_COLIBRI_WEBSOCKET=0
+      - XMPP_DOMAIN=your-domain.com
+      - XMPP_SERVER=xmpp-server
+      - XMPP_BOSH_URL_BASE=http://xmpp-server:5280
+      - XMPP_MUC_DOMAIN=conference.your-domain.com
+      - XMPP_AUTH_DOMAIN=auth.your-domain.com
+      - JICOFO_AUTH_USER=focus
+      - JICOFO_AUTH_PASSWORD=your-password
+      - JICOFO_COMPONENT_SECRET=your-secret
+      - JVB_BREWERY_MUC=jvbbrewery
+      - JVB_AUTH_USER=jvb
+      - JVB_AUTH_PASSWORD=your-password
+    networks:
+      - jitsi_net
+
+  web:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - jitsi
+    environment:
+      - JVB_URL=https://jvb:8443
+      - JVB_SECRET=your-secret
+    networks:
+      - jitsi_net
+
+networks:
+  jitsi_net:
